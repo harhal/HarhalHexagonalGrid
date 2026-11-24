@@ -48,3 +48,23 @@ FVector2D UHhGridFunctions::HexAxialCoordToPoint(const FHhAxialCoord& Coord, con
 
 	return FVector2D(x, y) * CellBigRadius;
 }
+
+FHhAxialCoord UHhGridFunctions::PointToHexAxialCoord(const FVector2D& Point, const float CellBigRadius)
+{
+	if (CellBigRadius <= 0.f)
+	{
+		return FHhAxialCoord(0, 0);
+	}
+
+	// Inverse of HexAxialCoordToPoint; the float constructor rounds to the nearest cell in cube space.
+	const float q = (FMath::Sqrt(3.f) / 3.f * Point.X - 1.f / 3.f * Point.Y) / CellBigRadius;
+	const float r = (2.f / 3.f * Point.Y) / CellBigRadius;
+	return FHhAxialCoord(q, r);
+}
+
+int32 UHhGridFunctions::GetHexDistance(const FHhAxialCoord& A, const FHhAxialCoord& B)
+{
+	const int32 DQ = A.CellCoord.X - B.CellCoord.X;
+	const int32 DR = A.CellCoord.Y - B.CellCoord.Y;
+	return (FMath::Abs(DQ) + FMath::Abs(DR) + FMath::Abs(DQ + DR)) / 2;
+}

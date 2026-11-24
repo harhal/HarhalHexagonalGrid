@@ -87,4 +87,37 @@ bool FHhAxialToPointTest::RunTest(const FString& Parameters)
 	return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHhDistanceTest, "HarhalHexagonalGrid.AxialCoord.Distance", HhGridFunctionsTest::Flags)
+bool FHhDistanceTest::RunTest(const FString& Parameters)
+{
+	TestEqual(TEXT("Same cell"), UHhGridFunctions::GetHexDistance(FHhAxialCoord(2, -1), FHhAxialCoord(2, -1)), 0);
+	TestEqual(TEXT("Neighbour"), UHhGridFunctions::GetHexDistance(FHhAxialCoord(0, 0), FHhAxialCoord(-1, 1)), 1);
+	TestEqual(TEXT("Two rings out"), UHhGridFunctions::GetHexDistance(FHhAxialCoord(0, 0), FHhAxialCoord(2, -1)), 2);
+	TestEqual(TEXT("Off origin"), UHhGridFunctions::GetHexDistance(FHhAxialCoord(-2, 3), FHhAxialCoord(1, -1)), 4);
+	TestEqual(TEXT("Agrees with the reference implementation"),
+		UHhGridFunctions::GetHexDistance(FHhAxialCoord(3, -5), FHhAxialCoord(-1, 2)),
+		HhGridFunctionsTest::HexDistance(FHhAxialCoord(3, -5), FHhAxialCoord(-1, 2)));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHhPointToAxialTest, "HarhalHexagonalGrid.AxialCoord.FromPoint", HhGridFunctionsTest::Flags)
+bool FHhPointToAxialTest::RunTest(const FString& Parameters)
+{
+	constexpr float Radius = 25.f;
+	for (int32 N = 0; N < UHhGridFunctions::GetHexSpiralLength(3); ++N)
+	{
+		const FHhAxialCoord Coord = UHhGridFunctions::MakeHexAxialCoordFromSpiral(N);
+		const FVector2D Centre = UHhGridFunctions::HexAxialCoordToPoint(Coord, Radius);
+		TestTrue(FString::Printf(TEXT("Centre of cell %d maps back to it"), N),
+			UHhGridFunctions::PointToHexAxialCoord(Centre, Radius) == Coord);
+		// Any point closer to the centre than the inner radius (sqrt(3)/2 * R) stays in the cell.
+		const FVector2D Offset(0.6f * Radius, -0.3f * Radius);
+		TestTrue(FString::Printf(TEXT("Point inside cell %d maps to it"), N),
+			UHhGridFunctions::PointToHexAxialCoord(Centre + Offset, Radius) == Coord);
+	}
+	TestTrue(TEXT("Point just past the right edge of the centre hex is in the +q neighbour"),
+		UHhGridFunctions::PointToHexAxialCoord(FVector2D(FMath::Sqrt(3.f) / 2.f * Radius + 1.f, 0.f), Radius) == FHhAxialCoord(1, 0));
+	return true;
+}
+
 #endif // WITH_DEV_AUTOMATION_TESTS

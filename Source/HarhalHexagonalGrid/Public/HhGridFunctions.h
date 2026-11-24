@@ -23,4 +23,12 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	static FVector2D HexAxialCoordToPoint(const FHhAxialCoord& Coord, const float CellBigRadius);
+
+	/** Inverse of HexAxialCoordToPoint: the cell containing Point (pointy-top hexes, origin at the centre of (0,0)). */
+	UFUNCTION(BlueprintPure)
+	static FHhAxialCoord PointToHexAxialCoord(const FVector2D& Point, const float CellBigRadius);
+
+	/** Number of steps between two cells. */
+	UFUNCTION(BlueprintPure)
+	static int32 GetHexDistance(const FHhAxialCoord& A, const FHhAxialCoord& B);
 };
