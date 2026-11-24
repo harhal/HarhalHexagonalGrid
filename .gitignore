@@ -1,0 +1,11 @@
+# Build output
+Binaries/
+Intermediate/
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/
+*.DotSettings.user
+.DS_Store
+Thumbs.db

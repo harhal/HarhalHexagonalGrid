@@ -1,1 +1,13 @@
-Resources/Icon128.png !text !filter !merge !diff
+* text=auto
+
+*.cpp      text eol=crlf
+*.h        text eol=crlf
+*.inl      text eol=crlf
+*.cs       text eol=crlf
+*.ini      text eol=crlf
+*.uplugin  text eol=crlf
+*.md       text
+
+*.png    binary
+*.uasset binary
+*.umap   binary
